@@ -7,6 +7,7 @@ import StartScreen from "./StartScreen.js";
 import Question from "./Question.js";
 import NextButton from "./NextButton.js";
 import Progress from "./Progress.js";
+import FinishScreen from "./FinishScreen.js";
 const initialState = {
   questions: [],
   //loading,'error','active','finisher'
@@ -14,6 +15,7 @@ const initialState = {
   index: 0,
   answer: null,
   points: 0,
+  highscore:0
 };
 function reducer(state, action) {
   switch (action.type) {
@@ -42,12 +44,14 @@ function reducer(state, action) {
       };
     case "nextQuestion":
       return { ...state, index: state.index + 1, answer: null };
+    case "finish":
+  return { ...state, status: "finished",highscore:state.points>state.highscore?state.points :state.highscore};
     default:
       throw new Error("Action is Unknow");
   }
 }
 export default function App() {
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
+  const [{ questions, status, index, answer, points,highscore }, dispatch] = useReducer(
     reducer,
     initialState
   );
@@ -86,8 +90,19 @@ export default function App() {
                 dispatch={dispatch}
                 answer={answer}
               />
-              <NextButton dispatch={dispatch} answer={answer} />
+              <NextButton
+                dispatch={dispatch}
+                answer={answer}
+                index={index}
+                numQuestion={numQUestion}
+              />
             </>
+          )}
+          {status === "finished" && (
+            <FinishScreen
+              points={points}
+              maxPossiblePoints={maxPossiblePoints} highscore={highscore}
+            />
           )}
         </Main>
       </div>
